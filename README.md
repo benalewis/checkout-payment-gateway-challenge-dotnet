@@ -268,3 +268,10 @@ similar products (e.g. WireMock) is to call it's API during your test setup via 
 If you have any questions or queries on any of the above, please contact the recruiter who is responsible for managing your individual process or careers@checkout.com.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+# Complete
+
+Other things to think about improving
+- Backoff/retries to the Bank third party
+- More holistic error messages returned to the client
+- Better way of returning a dependency error
