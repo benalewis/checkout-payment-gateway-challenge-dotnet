@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace PaymentGateway.Api.Bank;
+namespace PaymentGateway.Api.Bank.Models;
 
 public record BankRequest(
     [property: JsonPropertyName("card_number")] string CardNumber,
