@@ -12,10 +12,15 @@ public class PaymentsController(
     PaymentsService paymentsService) : Controller
 {
     [HttpGet("{id:guid}")]
-    public Task<ActionResult<PaymentResponse?>> GetPaymentAsync(Guid id, CancellationToken _)
+    [ProducesResponseType<PaymentResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult<PaymentResponse> GetPayment(Guid id)
     {
-        var payment = paymentsService.GetByIdAsync(id);
-        return Task.FromResult<ActionResult<PaymentResponse?>>(new OkObjectResult(payment));
+        var payment = paymentsService.GetById(id);
+    
+        return payment is null 
+            ? NotFound() 
+            : Ok(payment);
     }
     
     [HttpPost]

@@ -1,9 +1,11 @@
 ﻿using FluentValidation;
+
 using PaymentGateway.Api.Bank;
 using PaymentGateway.Api.Bank.Models;
 using PaymentGateway.Api.Enums;
 using PaymentGateway.Api.Models.Requests;
 using PaymentGateway.Api.Models.Responses;
+
 using OneOf;
 
 using PaymentGateway.Api.Controllers;
@@ -15,7 +17,7 @@ public class PaymentsService(
     BankHttpClient bankClient,
     PaymentsRepository repository)
 {
-    public async Task<PaymentResponse?> GetByIdAsync(Guid id) => await Task.FromResult(repository.Get(id));
+    public PaymentResponse? GetById(Guid id) => repository.Get(id);
 
     public async Task<OneOf<PaymentResponse, DependencyFailure>> ProcessAsync(
         PaymentRequest request, CancellationToken ct)
@@ -35,12 +37,12 @@ public class PaymentsService(
 
         var bankResponse = await bankClient.ProcessPaymentAsync(bankRequest, ct);
         return bankResponse.Match<OneOf<PaymentResponse, DependencyFailure>>(
-            success => SaveAndReturn(request, 
+            success => SaveAndReturn(request,
                 success.Authorized ? PaymentStatus.Authorized : PaymentStatus.Declined),
             _ => SaveAndReturn(request, PaymentStatus.Rejected),
             failure => failure
         );
-        
+
         PaymentResponse SaveAndReturn(PaymentRequest req, PaymentStatus status)
         {
             var response = CreateResponse(req, status);

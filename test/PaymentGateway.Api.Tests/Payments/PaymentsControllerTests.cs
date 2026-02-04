@@ -75,4 +75,41 @@ public class PaymentsControllerTests : IClassFixture<PaymentGatewayWebApplicatio
         Amount: 1050,
         Cvv: "123"
     );
+    
+    [Fact]
+    public async Task GetPayment_WhenPaymentExists_ReturnsPayment()
+    {
+        // Arrange
+        _factory.Interceptor.SetupOkResponse();
+        var request = CreateValidRequest();
+        var createResponse = await _client.PostAsJsonAsync("/api/payments", request);
+        var createdPayment = await createResponse.Content.ReadFromJsonAsync<PaymentResponse>();
+        Assert.Equal(HttpStatusCode.OK, createResponse.StatusCode);
+
+        // Act
+        var response = await _client.GetAsync($"/api/payments/{createdPayment!.Id}");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var payment = await response.Content.ReadFromJsonAsync<PaymentResponse>();
+        Assert.NotNull(payment);
+        Assert.Equal(createdPayment.Id, payment!.Id);
+        Assert.Equal(createdPayment.Status, payment.Status);
+        Assert.Equal(createdPayment.CardNumberLastFour, payment.CardNumberLastFour);
+        Assert.Equal(createdPayment.Amount, payment.Amount);
+        Assert.Equal(createdPayment.Currency, payment.Currency);
+    }
+
+    [Fact]
+    public async Task GetPayment_WhenPaymentDoesNotExist_ReturnsNotFound()
+    {
+        // Arrange
+        var nonExistentId = Guid.NewGuid();
+
+        // Act
+        var response = await _client.GetAsync($"/api/payments/{nonExistentId}");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
 }

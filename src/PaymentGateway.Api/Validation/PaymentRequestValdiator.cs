@@ -10,21 +10,25 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
 
     public PaymentRequestValidator(TimeProvider timeProvider)
     {
+        RuleLevelCascadeMode = CascadeMode.Stop;
+        
         RuleFor(x => x.CardNumber)
             .NotEmpty()
             .Length(14, 19)
             .Must(x => x.All(char.IsDigit)).WithMessage("Card number must contain only numeric characters.");
 
         RuleFor(x => x.ExpiryMonth)
-            .InclusiveBetween(1, 12);
+            .InclusiveBetween(1, 12)
+            .DependentRules(() =>
+            {
+                RuleFor(x => x)
+                    .Must(x => IsExpiryInFuture(x, timeProvider))
+                    .WithMessage("Card expiry must be in the future.")
+                    .WithName("Expiry");
+            });
 
         RuleFor(x => x.ExpiryYear)
             .GreaterThanOrEqualTo(timeProvider.GetUtcNow().Year);
-
-        RuleFor(x => x)
-            .Must(x => IsExpiryInFuture(x, timeProvider))
-            .WithMessage("Card expiry must be in the future.")
-            .WithName("Expiry");
 
         RuleFor(x => x.Currency)
             .NotEmpty()
