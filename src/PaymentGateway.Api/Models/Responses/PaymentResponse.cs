@@ -1,13 +1,14 @@
-﻿using PaymentGateway.Api.Enums;
+﻿namespace PaymentGateway.Api.Models.Responses;
 
-namespace PaymentGateway.Api.Models.Responses;
+using System.Text.Json.Serialization;
+using Enums;
 
 public record PaymentResponse(
-    Guid Id,
-    PaymentStatus Status,
-    string CardNumberLastFour,
-    int ExpiryMonth,
-    int ExpiryYear,
-    string Currency,
-    int Amount
+    [property: JsonPropertyName("id")] Guid Id,
+    [property: JsonPropertyName("status")] PaymentStatus Status,
+    [property: JsonPropertyName("card_number_last_four")] string CardNumberLastFour,
+    [property: JsonPropertyName("expiry_month")] int ExpiryMonth,
+    [property: JsonPropertyName("expiry_year")] int ExpiryYear,
+    [property: JsonPropertyName("currency")] string Currency,
+    [property: JsonPropertyName("amount")] int Amount
 );
