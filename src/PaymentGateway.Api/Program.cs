@@ -1,4 +1,7 @@
+using FluentValidation;
+
 using PaymentGateway.Api.Services;
+using PaymentGateway.Api.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +11,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddValidatorsFromAssemblyContaining<PaymentRequestValidator>();
 
 builder.Services.AddSingleton<PaymentsRepository>();
 

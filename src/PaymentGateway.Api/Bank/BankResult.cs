@@ -1,0 +1,2 @@
+﻿namespace PaymentGateway.Api.Bank;
+
